@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .database import engine, Base
 from . import models
-from .routes import cameras
+from .routes import cameras, detections
 
 app = FastAPI()
 
@@ -21,6 +21,7 @@ Base.metadata.create_all(bind=engine)
 
 # Routes
 app.include_router(cameras.router)
+app.include_router(detections.router)
 
 
 # Endpoints

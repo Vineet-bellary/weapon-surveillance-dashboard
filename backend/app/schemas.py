@@ -1,13 +1,15 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-'''
+"""
     This module deals with API validation.
-'''
+"""
+
 
 class CameraCreate(BaseModel):
     name: str
     stream_url: str
+
 
 class CameraResponse(BaseModel):
     id: int
@@ -17,4 +19,22 @@ class CameraResponse(BaseModel):
     created_at: datetime
 
     class config:
+        from_attributes = True
+
+
+class DetectionCreate(BaseModel):
+    camera_id: int
+    object_class: str
+    confidence: float
+
+
+class DetectionResponse(BaseModel):
+    id: int
+    camera_id: int
+    object_class: str
+    confidence: float
+    image_path: str | None
+    detected_at: datetime
+
+    class Config:
         from_attributes = True
