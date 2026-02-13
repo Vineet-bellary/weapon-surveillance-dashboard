@@ -3,9 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .database import engine, Base
 from . import models
+from .routes import cameras
 
 app = FastAPI()
 
+# Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -14,9 +16,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Sqlite Database building
 Base.metadata.create_all(bind=engine)
 
+# Routes
+app.include_router(cameras.router)
 
+
+# Endpoints
 @app.get("/")
 def home():
     return {"message": "Backend running mama"}
