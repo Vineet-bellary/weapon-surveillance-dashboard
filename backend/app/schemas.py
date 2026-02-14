@@ -9,6 +9,7 @@ from datetime import datetime
 class CameraCreate(BaseModel):
     name: str
     stream_url: str
+    is_active: bool = True  # default active
 
 
 class CameraResponse(BaseModel):
@@ -18,8 +19,14 @@ class CameraResponse(BaseModel):
     is_active: bool
     created_at: datetime
 
-    class config:
+    class Config:
         from_attributes = True
+
+
+class CameraUpdate(BaseModel):
+    name: str | None = None
+    stream_url: str | None = None
+    is_active: bool | None = None
 
 
 class DetectionCreate(BaseModel):
