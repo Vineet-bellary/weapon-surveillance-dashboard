@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
         )
 
         for camera in active_cameras:
-            source = camera.id - 1  # DEV ONLY: hardcoded camera index mapping
+            source = camera.stream_url  # DEV ONLY: hardcoded camera index mapping
             if isinstance(source, str) and source.isdigit():
                 source = int(source)
 
