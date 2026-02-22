@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { Button, Typography, Container } from "@mui/material";
 import "./App.css";
 
 function App() {
@@ -17,10 +16,15 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <h1>Weapons Surveillance Dashboard</h1>
-      <p>{message}</p>
-    </div>
+    <Container>
+      <Typography variant="h4" sx={{ mt: 4 }}>
+        Weapons Surrveillance Dashboard
+      </Typography>
+
+      <Button variant="contained" sx={{ mt: 2 }}>
+        Test MUI Button
+      </Button>
+    </Container>
   );
 }
 
