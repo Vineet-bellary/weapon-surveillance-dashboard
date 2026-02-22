@@ -21,7 +21,7 @@ function App() {
         Weapons Surrveillance Dashboard
       </Typography>
 
-      <Button variant="contained" sx={{ mt: 2 }}>
+      <Button variant="outlined" sx={{ mt: 2 }}>
         Test MUI Button
       </Button>
     </Container>
