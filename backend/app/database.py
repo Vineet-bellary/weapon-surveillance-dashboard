@@ -18,6 +18,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Base
 Base = declarative_base()
 
+
 def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
