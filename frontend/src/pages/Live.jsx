@@ -1,5 +1,10 @@
 function Live() {
-  return <h1>Live View page</h1>;
+  return (
+    <div>
+      <h2>Live Cameras View</h2>
+      <p>Live cameras feed is rendered</p>
+    </div>
+  );
 }
 
 export default Live;
