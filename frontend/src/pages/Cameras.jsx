@@ -32,7 +32,9 @@ export default function Cameras() {
           {cameras.map((cam) => (
             <Grid size={{ xs: 12, sm: 6, md: 6 }} key={cam.id}>
               <Card
+                onClick={() => window.open(`/camera/${cam.id}`, "_blank")}
                 sx={{
+                  cursor: "pointer",
                   borderRadius: 3,
                   backgroundColor: "#1e293b", // dark card
                   color: "#e2e8f0",

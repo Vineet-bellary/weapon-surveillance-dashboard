@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Cameras from "./pages/Cameras";
 import Live from "./pages/Live";
 import Detections from "./pages/Detections";
+import CameraView from "./pages/CameraView";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/live" element={<Live />} />
           <Route path="/detections" element={<Detections />} />
         </Route>
+        <Route path="/camera/:id" element={<CameraView />} />
       </Routes>
     </BrowserRouter>
   );
