@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { Drawer, IconButton, useMediaQuery } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
@@ -7,7 +10,66 @@ import SecurityIcon from "@mui/icons-material/Security";
 
 import colors from "../theme/colors";
 
+function SidebarContent({ onNavigate, linkBase, radius }) {
+  return (
+    <>
+      <h3 style={{ marginBottom: "20px", color: colors.text }}>Dashboard</h3>
+
+      <NavLink
+        to="/"
+        onClick={onNavigate}
+        style={({ isActive }) => ({
+          ...linkBase,
+          background: isActive ? colors.border : "transparent",
+        })}
+      >
+        <DashboardIcon style={{ color: colors.accent }} />
+        Home
+      </NavLink>
+
+      <NavLink
+        to="/cameras"
+        onClick={onNavigate}
+        style={({ isActive }) => ({
+          ...linkBase,
+          background: isActive ? colors.border : "transparent",
+        })}
+      >
+        <VideocamIcon style={{ color: colors.accent }} />
+        Cameras
+      </NavLink>
+
+      <NavLink
+        to="/live"
+        onClick={onNavigate}
+        style={({ isActive }) => ({
+          ...linkBase,
+          background: isActive ? colors.border : "transparent",
+        })}
+      >
+        <LiveTvIcon style={{ color: colors.accent }} />
+        Live
+      </NavLink>
+
+      <NavLink
+        to="/detections"
+        onClick={onNavigate}
+        style={({ isActive }) => ({
+          ...linkBase,
+          background: isActive ? colors.border : "transparent",
+        })}
+      >
+        <WarningIcon style={{ color: colors.accent }} />
+        Detections
+      </NavLink>
+    </>
+  );
+}
+
 function Layout() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 899px)");
+
   const radius = "10px";
   const linkBase = {
     display: "flex",
@@ -27,7 +89,7 @@ function Layout() {
         height: "100dvh",
         overflow: "hidden",
         background: colors.secondary,
-        padding: "10px",
+        padding: isMobile ? "0px" : "10px",
       }}
     >
       <div
@@ -47,11 +109,25 @@ function Layout() {
             display: "flex",
             flexShrink: 0,
             alignItems: "center",
-            padding: "0 24px",
+            padding: "0 16px",
             borderBottom: `1px solid ${colors.border}`,
             gap: "12px",
           }}
         >
+          {/* Burger button — mobile only */}
+          {isMobile && (
+            <IconButton
+              onClick={() => setDrawerOpen(true)}
+              sx={{
+                color: colors.text,
+                p: 0.5,
+                "&:hover": { backgroundColor: `${colors.accent}20` },
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+
           <SecurityIcon style={{ color: colors.accent }} />
           <h1 style={{ fontSize: "18px", margin: 0, color: colors.text }}>
             Weapon Surveillance
@@ -60,72 +136,54 @@ function Layout() {
 
         {/* BODY */}
         <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-          {/* SIDEBAR */}
-          <div
-            style={{
-              width: "220px",
-              background: colors.primary,
-              padding: "20px 15px",
-              borderRight: `1px solid ${colors.border}`,
-              borderTopLeftRadius: radius,
-              borderBottomLeftRadius: radius,
+          {/* PERMANENT SIDEBAR — desktop only */}
+          {!isMobile && (
+            <div
+              style={{
+                width: "220px",
+                flexShrink: 0,
+                background: colors.primary,
+                padding: "20px 15px",
+                borderRight: `1px solid ${colors.border}`,
+                borderTopLeftRadius: radius,
+                borderBottomLeftRadius: radius,
+                overflowY: "auto",
+              }}
+            >
+              <SidebarContent linkBase={linkBase} radius={radius} />
+            </div>
+          )}
+
+          {/* MOBILE DRAWER */}
+          <Drawer
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            PaperProps={{
+              sx: {
+                width: "240px",
+                background: colors.primary,
+                padding: "20px 15px",
+                color: colors.text,
+                borderRight: `1px solid ${colors.border}`,
+              },
+            }}
+            ModalProps={{
+              keepMounted: true,
             }}
           >
-            <h3 style={{ marginBottom: "20px", color: colors.text }}>
-              Dashboard
-            </h3>
-
-            <NavLink
-              to="/"
-              style={({ isActive }) => ({
-                ...linkBase,
-                background: isActive ? colors.border : "transparent",
-              })}
-            >
-              <DashboardIcon style={{ color: colors.accent }} />
-              Home
-            </NavLink>
-
-            <NavLink
-              to="/cameras"
-              style={({ isActive }) => ({
-                ...linkBase,
-                background: isActive ? colors.border : "transparent",
-              })}
-            >
-              <VideocamIcon style={{ color: colors.accent }} />
-              Cameras
-            </NavLink>
-
-            <NavLink
-              to="/live"
-              style={({ isActive }) => ({
-                ...linkBase,
-                background: isActive ? colors.border : "transparent",
-              })}
-            >
-              <LiveTvIcon style={{ color: colors.accent }} />
-              Live
-            </NavLink>
-
-            <NavLink
-              to="/detections"
-              style={({ isActive }) => ({
-                ...linkBase,
-                background: isActive ? colors.border : "transparent",
-              })}
-            >
-              <WarningIcon style={{ color: colors.accent }} />
-              Detections
-            </NavLink>
-          </div>
+            <SidebarContent
+              onNavigate={() => setDrawerOpen(false)}
+              linkBase={linkBase}
+              radius={radius}
+            />
+          </Drawer>
 
           {/* CONTENT */}
           <div
             style={{
-              minHeight: 0,
               flex: 1,
-              padding: "25px",
+              minHeight: 0,
+              padding: isMobile ? "16px" : "25px",
               color: colors.text,
               borderTopRightRadius: radius,
               borderBottomRightRadius: radius,

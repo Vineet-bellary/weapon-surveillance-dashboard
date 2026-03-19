@@ -119,9 +119,19 @@ export default function Cameras() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: "12px",
+          flexWrap: "wrap",
         }}
       >
-        <Typography variant="h4" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
+        <Typography
+          variant="h4"
+          fontWeight={600}
+          gutterBottom
+          sx={{
+            mb: { xs: 1, sm: 3 },
+            fontSize: { xs: "1.75rem", sm: "2.125rem" },
+          }}
+        >
           Cameras
         </Typography>
 
@@ -134,6 +144,7 @@ export default function Cameras() {
             setOpenModal(true);
           }}
           sx={{
+            whiteSpace: "nowrap",
             backgroundColor: colors.accent,
             color: colors.accentText,
             fontWeight: 600,
@@ -150,9 +161,9 @@ export default function Cameras() {
           No cameras found
         </Typography>
       ) : (
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, sm: 3 }} >
           {cameras.map((cam) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={cam.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={cam.id}>
               <Card
                 onClick={() => window.open(`/camera/${cam.id}`, "_blank")}
                 sx={{
@@ -173,15 +184,31 @@ export default function Cameras() {
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
-                      alignItems: "center",
+                      alignItems: "flex-start",
+                      gap: "8px",
                     }}
                   >
-                    <Typography variant="h5" fontWeight={600}>
+                    <Typography
+                      variant="h5"
+                      fontWeight={600}
+                      sx={{
+                        flex: 1,
+                        minWidth: 0,
+                        lineHeight: 1.2,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        wordBreak: "break-word",
+                      }}
+                      title={cam.name}
+                    >
                       {cam.name}
                     </Typography>
 
                     {/* Icons Group */}
-                    <div style={{ display: "flex", gap: "8px" }}>
+                    <div style={{ display: "flex", gap: "4px", flexShrink: 0 }}>
                       {/* Settings Button */}
                       <IconButton
                         size="small"
@@ -191,6 +218,7 @@ export default function Cameras() {
                           setOpenModal(true);
                         }}
                         sx={{
+                          p: 0.5,
                           color: colors.muted,
                           "&:hover": {
                             color: colors.accent,
@@ -198,7 +226,7 @@ export default function Cameras() {
                           },
                         }}
                       >
-                        <SettingsIcon />
+                        <SettingsIcon fontSize="small" />
                       </IconButton>
 
                       {/* Delete Button */}
@@ -209,13 +237,14 @@ export default function Cameras() {
                           handelDelete(cam.id);
                         }}
                         sx={{
+                          p: 0.5,
                           color: colors.error,
                           "&:hover": {
                             backgroundColor: `${colors.error}20`,
                           },
                         }}
                       >
-                        <DeleteIcon />
+                        <DeleteIcon fontSize="small" />
                       </IconButton>
                     </div>
                   </div>
