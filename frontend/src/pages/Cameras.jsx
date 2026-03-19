@@ -1,11 +1,31 @@
 import { useEffect, useState } from "react";
-import { Typography, Grid, Card, CardContent, Chip } from "@mui/material";
+import {
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  Chip,
+  Button,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+} from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 import { getCameras } from "../api/cameras";
+import colors from "../theme/colors";
 
 export default function Cameras() {
   const [cameras, setCameras] = useState([]);
+  const [selectedCamera, setSelectedCamera] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [name, setName] = useState("");
+  const [streamUrl, setStreamUrl] = useState("");
 
+  // Camera fetching logic
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -19,6 +39,14 @@ export default function Cameras() {
 
     fetchData();
   }, []);
+
+  // Camera update logic
+  useEffect(() => {
+    if (selectedCamera) {
+      setName(selectedCamera.name);
+      setStreamUrl(selectedCamera.stream_url || "");
+    }
+  }, [selectedCamera]);
 
   return (
     <div>
@@ -36,8 +64,8 @@ export default function Cameras() {
                 sx={{
                   cursor: "pointer",
                   borderRadius: 3,
-                  backgroundColor: "#1e293b", // dark card
-                  color: "#e2e8f0",
+                  backgroundColor: colors.card, // dark card
+                  color: colors.text,
                   boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
                   transition: "0.3s",
                   "&:hover": {
@@ -47,15 +75,43 @@ export default function Cameras() {
                 }}
               >
                 <CardContent>
-                  <Typography variant="h5" fontWeight={600} gutterBottom>
-                    {cam.name}
-                  </Typography>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="h5" fontWeight={600}>
+                      {cam.name}
+                    </Typography>
 
-                  <Typography variant="body1" sx={{ color: "#94a3b8", mt: 1 }}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedCamera(cam);
+                        setOpenModal(true);
+                      }}
+                      sx={{
+                        color: colors.muted,
+                        "&:hover": {
+                          color: colors.accent,
+                          backgroundColor: `${colors.accent}20`,
+                        },
+                      }}
+                    >
+                      <SettingsIcon />
+                    </IconButton>
+                  </div>
+
+                  <Typography
+                    variant="body1"
+                    sx={{ color: colors.muted, mt: 1 }}
+                  >
                     ID: {cam.id}
                   </Typography>
 
-                  <Typography variant="body1" sx={{ color: "#94a3b8" }}>
+                  <Typography variant="body1" sx={{ color: colors.muted }}>
                     Created:{" "}
                     {new Date(cam.created_at).toLocaleString("en-IN", {
                       dateStyle: "medium",
@@ -65,9 +121,14 @@ export default function Cameras() {
 
                   <Chip
                     label={cam.is_active ? "Active" : "Inactive"}
-                    color={cam.is_active ? "success" : "error"}
-                    size="medium"
-                    sx={{ mt: 2, fontWeight: 500 }}
+                    sx={{
+                      mt: 2,
+                      fontWeight: 500,
+                      backgroundColor: cam.is_active
+                        ? colors.success
+                        : colors.error,
+                      color: "#fff",
+                    }}
                   />
                 </CardContent>
               </Card>
@@ -75,6 +136,109 @@ export default function Cameras() {
           ))}
         </Grid>
       )}
+      <Dialog
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        fullWidth
+        slotProps={{
+          backdrop: {
+            sx: {
+              backgroundColor: "rgba(0,0,0,0.7)",
+              backdropFilter: "blur(6px)",
+            },
+          },
+          paper: {
+            sx: {
+              backgroundColor: colors.secondary,
+              color: colors.text,
+              borderRadius: 3,
+              border: `1px solid ${colors.border}`,
+            },
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 600, color: colors.text }}>
+          Update Camera: {selectedCamera?.name}
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Camera Name"
+            fullWidth
+            margin="normal"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            sx={{
+              "& .MuiInputBase-input": {
+                color: colors.text,
+              },
+              "& .MuiInputLabel-root": {
+                color: colors.muted,
+              },
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: colors.primary,
+                "& fieldset": {
+                  borderColor: colors.border,
+                },
+                "&:hover fieldset": {
+                  borderColor: colors.accentHover,
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: colors.accent,
+                },
+              },
+            }}
+          />
+          <TextField
+            label="Stream URL"
+            fullWidth
+            margin="normal"
+            value={streamUrl}
+            onChange={(e) => setStreamUrl(e.target.value)}
+            sx={{
+              "& .MuiInputBase-input": {
+                color: colors.text,
+              },
+              "& .MuiInputLabel-root": {
+                color: colors.muted,
+              },
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: colors.primary,
+                "& fieldset": {
+                  borderColor: colors.border,
+                },
+                "&:hover fieldset": {
+                  borderColor: colors.accentHover,
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: colors.accent,
+                },
+              },
+            }}
+          />
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            onClick={() => setOpenModal(false)}
+            sx={{ color: colors.muted }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: colors.accent,
+              color: "#020617",
+              fontWeight: 600,
+              "&:hover": {
+                backgroundColor: colors.accentHover,
+              },
+            }}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
