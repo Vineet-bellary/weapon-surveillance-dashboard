@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-import { getCameras } from "../api/cameras";
+import { getCameras, updateCamera } from "../api/cameras";
 import colors from "../theme/colors";
 
 export default function Cameras() {
@@ -47,6 +47,23 @@ export default function Cameras() {
       setStreamUrl(selectedCamera.stream_url || "");
     }
   }, [selectedCamera]);
+
+  const handleSave = async () => {
+    try {
+      await updateCamera(selectedCamera.id, {
+        name: name,
+        stream_url: streamUrl,
+      });
+
+      setOpenModal(false);
+
+      // Refresh camera list after update
+      const data = await getCameras();
+      setCameras(data);
+    } catch (error) {
+      console.error("Error updating camera: ", error);
+    }
+  };
 
   return (
     <div>
@@ -226,6 +243,7 @@ export default function Cameras() {
           </Button>
           <Button
             variant="contained"
+            onClick={handleSave}
             sx={{
               backgroundColor: colors.accent,
               color: "#020617",

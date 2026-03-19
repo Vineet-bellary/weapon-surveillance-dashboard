@@ -13,3 +13,16 @@ export const getCameras = async () => {
     throw error;
   }
 };
+
+export const updateCamera = async (id, payload) => {
+  try{
+    const res = await api.put(`/cameras/${id}`, payload);
+
+    console.log("Camera Updated: ", res.data);
+
+    return res.data;
+  } catch (error){
+    console.error("Error updating camera: ", error);
+    throw error;
+  }
+};
