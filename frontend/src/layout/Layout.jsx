@@ -24,7 +24,8 @@ function Layout() {
   return (
     <div
       style={{
-        height: "100vh",
+        height: "100dvh",
+        overflow: "hidden",
         background: colors.secondary,
         padding: "10px",
       }}
@@ -33,7 +34,6 @@ function Layout() {
         style={{
           height: "100%",
           borderRadius: "12px",
-          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
           background: colors.secondary,
@@ -42,15 +42,14 @@ function Layout() {
         {/* HEADER */}
         <div
           style={{
-            height: "60px",
+            height: "72px",
             background: colors.primary,
             display: "flex",
+            flexShrink: 0,
             alignItems: "center",
-            padding: "0 20px",
+            padding: "0 24px",
             borderBottom: `1px solid ${colors.border}`,
-            gap: "10px",
-            borderBottomLeftRadius: radius,
-            borderBottomRightRadius: radius,
+            gap: "12px",
           }}
         >
           <SecurityIcon style={{ color: colors.accent }} />
@@ -60,7 +59,7 @@ function Layout() {
         </div>
 
         {/* BODY */}
-        <div style={{ display: "flex", flex: 1 }}>
+        <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
           {/* SIDEBAR */}
           <div
             style={{
@@ -124,11 +123,13 @@ function Layout() {
           {/* CONTENT */}
           <div
             style={{
+              minHeight: 0,
               flex: 1,
               padding: "25px",
               color: colors.text,
               borderTopRightRadius: radius,
               borderBottomRightRadius: radius,
+              overflowY: "auto",
             }}
           >
             <Outlet />

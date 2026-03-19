@@ -14,8 +14,14 @@ import {
   DialogActions,
 } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-import { getCameras, updateCamera } from "../api/cameras";
+import {
+  getCameras,
+  updateCamera,
+  createCamera,
+  deleteCamera,
+} from "../api/cameras";
 import colors from "../theme/colors";
 
 export default function Cameras() {
@@ -50,32 +56,103 @@ export default function Cameras() {
 
   const handleSave = async () => {
     try {
-      await updateCamera(selectedCamera.id, {
-        name: name,
-        stream_url: streamUrl,
-      });
+      if (selectedCamera) {
+        // UPDATE
+        await updateCamera(selectedCamera.id, {
+          name,
+          stream_url: streamUrl,
+        });
+      } else {
+        // CREATE
+        await createCamera({
+          name,
+          stream_url: streamUrl,
+          is_active: true,
+        });
+      }
 
       setOpenModal(false);
 
-      // Refresh camera list after update
       const data = await getCameras();
       setCameras(data);
     } catch (error) {
-      console.error("Error updating camera: ", error);
+      console.error("Save failed:", error);
+    }
+  };
+
+  // Delete Camera logic
+  const handelDelete = async (id) => {
+    try {
+      await deleteCamera(id);
+
+      const data = await getCameras();
+      setCameras(data);
+    } catch (error) {
+      console.log("Delete failed; ", error);
+    }
+  };
+
+  // Toggle camaera status
+  const handleToggleActive = async (cam) => {
+    try {
+      await updateCamera(cam.id, {
+        is_active: !cam.is_active,
+      });
+
+      // refresh cameras
+      const data = await getCameras();
+      setCameras(data);
+    } catch (error) {
+      console.log("Toggle failed: ", error);
     }
   };
 
   return (
-    <div>
-      <Typography variant="h4" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
-        Cameras
-      </Typography>
+    <div
+      style={{
+        backgroundColor: colors.secondary,
+        padding: "20px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h4" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
+          Cameras
+        </Typography>
+
+        <Button
+          variant="contained"
+          onClick={() => {
+            setSelectedCamera(null);
+            setName("");
+            setStreamUrl("");
+            setOpenModal(true);
+          }}
+          sx={{
+            backgroundColor: colors.accent,
+            color: colors.accentText,
+            fontWeight: 600,
+            "&:hover": {
+              backgroundColor: colors.accentHover,
+            },
+          }}
+        >
+          + Add Camera
+        </Button>
+      </div>
       {cameras.length === 0 ? (
-        <Typography color="text.secondary">No cameras found</Typography>
+        <Typography sx={{ color: colors.error, textAlign: "center", mt: 5 }}>
+          No cameras found
+        </Typography>
       ) : (
         <Grid container spacing={3}>
           {cameras.map((cam) => (
-            <Grid size={{ xs: 12, sm: 6, md: 6 }} key={cam.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={cam.id}>
               <Card
                 onClick={() => window.open(`/camera/${cam.id}`, "_blank")}
                 sx={{
@@ -103,22 +180,44 @@ export default function Cameras() {
                       {cam.name}
                     </Typography>
 
-                    <IconButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedCamera(cam);
-                        setOpenModal(true);
-                      }}
-                      sx={{
-                        color: colors.muted,
-                        "&:hover": {
-                          color: colors.accent,
-                          backgroundColor: `${colors.accent}20`,
-                        },
-                      }}
-                    >
-                      <SettingsIcon />
-                    </IconButton>
+                    {/* Icons Group */}
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      {/* Settings Button */}
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCamera(cam);
+                          setOpenModal(true);
+                        }}
+                        sx={{
+                          color: colors.muted,
+                          "&:hover": {
+                            color: colors.accent,
+                            backgroundColor: `${colors.accent}20`,
+                          },
+                        }}
+                      >
+                        <SettingsIcon />
+                      </IconButton>
+
+                      {/* Delete Button */}
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handelDelete(cam.id);
+                        }}
+                        sx={{
+                          color: colors.error,
+                          "&:hover": {
+                            backgroundColor: `${colors.error}20`,
+                          },
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </div>
                   </div>
 
                   <Typography
@@ -138,13 +237,49 @@ export default function Cameras() {
 
                   <Chip
                     label={cam.is_active ? "Active" : "Inactive"}
+                    clickable
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleActive(cam);
+                    }}
+                    icon={
+                      cam.is_active ? (
+                        <span style={{ fontSize: "10px" }}>●</span>
+                      ) : (
+                        <span style={{ fontSize: "10px" }}>●</span>
+                      )
+                    }
                     sx={{
                       mt: 2,
-                      fontWeight: 500,
+                      px: 1,
+                      fontWeight: 600,
+                      letterSpacing: "0.3px",
+                      borderRadius: "999px", // pill shape
+                      cursor: "pointer",
+
                       backgroundColor: cam.is_active
-                        ? colors.success
-                        : colors.error,
-                      color: "#fff",
+                        ? `${colors.success}20`
+                        : `${colors.error}20`,
+
+                      color: cam.is_active ? colors.success : colors.error,
+
+                      border: `1px solid ${
+                        cam.is_active ? colors.success : colors.error
+                      }`,
+
+                      transition: "all 0.2s ease",
+
+                      "& .MuiChip-icon": {
+                        color: cam.is_active ? colors.success : colors.error,
+                        ml: "4px",
+                      },
+
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                        backgroundColor: cam.is_active
+                          ? `${colors.success}30`
+                          : `${colors.error}30`,
+                      },
                     }}
                   />
                 </CardContent>
@@ -175,7 +310,9 @@ export default function Cameras() {
         }}
       >
         <DialogTitle sx={{ fontWeight: 600, color: colors.text }}>
-          Update Camera: {selectedCamera?.name}
+          {selectedCamera
+            ? `Update Camera: ${selectedCamera?.name}`
+            : "Add Camera"}
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -246,7 +383,7 @@ export default function Cameras() {
             onClick={handleSave}
             sx={{
               backgroundColor: colors.accent,
-              color: "#020617",
+              color: colors.accentText,
               fontWeight: 600,
               "&:hover": {
                 backgroundColor: colors.accentHover,

@@ -132,7 +132,6 @@ def update_camera(
     db.commit()
     db.refresh(db_camera)
 
-    # 🔥 Runtime control
     manager = request.app.state.camera_manager
 
     # If activated
@@ -148,3 +147,21 @@ def update_camera(
         manager.stop_camera(db_camera.id)
 
     return db_camera
+
+@router.delete("/cameras/{camera_id}")
+def delete_camera(camera_id: int, request: Request, db: Session = Depends(get_db),):
+    db_camera = db.query(models.Camera).filter(models.Camera.id == camera_id).first()
+
+    if not db_camera:
+        raise HTTPException(status_code=404, detail="Camera not found")
+    
+    manager = request.app.state.camera_manager
+    if manager.get_worker(camera_id):
+        manager.stop_camera(camera_id)
+
+    # Delete from DB
+    db.delete(db_camera)
+    db.commit()
+
+    return {"message": "Camera deleted successfully"}
+    

@@ -8,6 +8,7 @@ const colors = {
 
   text: "#e2e8f0", // main text
   muted: "#94a3b8", // secondary text
+  accentText: "#020617", // accent text
 
   border: "#334155", // input borders
 
