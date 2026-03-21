@@ -5,6 +5,7 @@ import {
   DialogActions,
   TextField,
   Button,
+  Tooltip,
 } from "@mui/material";
 import colors from "../../theme/colors";
 
@@ -47,82 +48,90 @@ export default function CameraModal({
       </DialogTitle>
 
       <DialogContent>
-        <TextField
-          label="Camera Name"
-          fullWidth
-          margin="normal"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          sx={{
-            "& .MuiInputBase-input": {
-              color: colors.text,
-            },
-            "& .MuiInputLabel-root": {
-              color: colors.muted,
-            },
-            "& .MuiOutlinedInput-root": {
-              backgroundColor: colors.primary,
-              "& fieldset": {
-                borderColor: colors.border,
+        <Tooltip title="Display name shown on dashboard cards">
+          <TextField
+            label="Camera Name"
+            fullWidth
+            margin="normal"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            sx={{
+              "& .MuiInputBase-input": {
+                color: colors.text,
               },
-              "&:hover fieldset": {
-                borderColor: colors.accentHover,
+              "& .MuiInputLabel-root": {
+                color: colors.muted,
               },
-              "&.Mui-focused fieldset": {
-                borderColor: colors.accent,
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: colors.primary,
+                "& fieldset": {
+                  borderColor: colors.border,
+                },
+                "&:hover fieldset": {
+                  borderColor: colors.accentHover,
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: colors.accent,
+                },
               },
-            },
-          }}
-        />
+            }}
+          />
+        </Tooltip>
 
-        <TextField
-          label="Stream URL"
-          fullWidth
-          margin="normal"
-          value={streamUrl}
-          onChange={(e) => setStreamUrl(e.target.value)}
-          sx={{
-            "& .MuiInputBase-input": {
-              color: colors.text,
-            },
-            "& .MuiInputLabel-root": {
-              color: colors.muted,
-            },
-            "& .MuiOutlinedInput-root": {
-              backgroundColor: colors.primary,
-              "& fieldset": {
-                borderColor: colors.border,
+        <Tooltip title="RTSP/HTTP URL or camera index used by backend">
+          <TextField
+            label="Stream URL"
+            fullWidth
+            margin="normal"
+            value={streamUrl}
+            onChange={(e) => setStreamUrl(e.target.value)}
+            sx={{
+              "& .MuiInputBase-input": {
+                color: colors.text,
               },
-              "&:hover fieldset": {
-                borderColor: colors.accentHover,
+              "& .MuiInputLabel-root": {
+                color: colors.muted,
               },
-              "&.Mui-focused fieldset": {
-                borderColor: colors.accent,
+              "& .MuiOutlinedInput-root": {
+                backgroundColor: colors.primary,
+                "& fieldset": {
+                  borderColor: colors.border,
+                },
+                "&:hover fieldset": {
+                  borderColor: colors.accentHover,
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: colors.accent,
+                },
               },
-            },
-          }}
-        />
+            }}
+          />
+        </Tooltip>
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose} sx={{ color: colors.muted }}>
-          Cancel
-        </Button>
+        <Tooltip title="Close without saving changes">
+          <Button onClick={onClose} sx={{ color: colors.muted }}>
+            Cancel
+          </Button>
+        </Tooltip>
 
-        <Button
-          variant="contained"
-          onClick={onSave}
-          sx={{
-            backgroundColor: colors.accent,
-            color: colors.accentText,
-            fontWeight: 600,
-            "&:hover": {
-              backgroundColor: colors.accentHover,
-            },
-          }}
-        >
-          Save
-        </Button>
+        <Tooltip title="Save camera details">
+          <Button
+            variant="contained"
+            onClick={onSave}
+            sx={{
+              backgroundColor: colors.accent,
+              color: colors.accentText,
+              fontWeight: 600,
+              "&:hover": {
+                backgroundColor: colors.accentHover,
+              },
+            }}
+          >
+            Save
+          </Button>
+        </Tooltip>
       </DialogActions>
     </Dialog>
   );

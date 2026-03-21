@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Box, Typography, Chip } from "@mui/material";
+import { Box, Typography, Chip, Tooltip } from "@mui/material";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 
 import { getCamerahealth } from "../api/health";
@@ -74,11 +74,13 @@ export default function CameraView() {
 
       {/* Status + Last Seen */}
       <Box sx={{ p: 2, textAlign: "center" }}>
-        <Chip
-          label={status}
-          color={status === "ONLINE" ? "success" : "error"}
-          sx={{ mb: 1 }}
-        />
+        <Tooltip title="Current backend health state for this camera">
+          <Chip
+            label={status}
+            color={status === "ONLINE" ? "success" : "error"}
+            sx={{ mb: 1 }}
+          />
+        </Tooltip>
 
         <Typography variant="body2" sx={{ color: "#94a3b8" }}>
           Last Seen: {formattedLastSeen}

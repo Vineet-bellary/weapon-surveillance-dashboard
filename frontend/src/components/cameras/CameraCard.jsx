@@ -1,4 +1,4 @@
-import { CardContent, Typography, IconButton } from "@mui/material";
+import { CardContent, Typography, IconButton, Tooltip } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -22,40 +22,44 @@ export default function CameraCard({
           </Typography>
 
           <div style={{ display: "flex", gap: "4px" }}>
-            <IconButton
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(cam);
-              }}
-              sx={{
-                p: 0.5,
-                color: colors.muted,
-                "&:hover": {
-                  color: colors.accent,
-                  backgroundColor: `${colors.accent}20`,
-                },
-              }}
-            >
-              <SettingsIcon fontSize="small" />
-            </IconButton>
+            <Tooltip title="Edit camera details">
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(cam);
+                }}
+                sx={{
+                  p: 0.5,
+                  color: colors.muted,
+                  "&:hover": {
+                    color: colors.accent,
+                    backgroundColor: `${colors.accent}20`,
+                  },
+                }}
+              >
+                <SettingsIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
 
-            <IconButton
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(cam.id);
-              }}
-              sx={{
-                p: 0.5,
-                color: colors.error,
-                "&:hover": {
-                  backgroundColor: `${colors.error}20`,
-                },
-              }}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
+            <Tooltip title="Delete camera">
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(cam.id);
+                }}
+                sx={{
+                  p: 0.5,
+                  color: colors.error,
+                  "&:hover": {
+                    backgroundColor: `${colors.error}20`,
+                  },
+                }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           </div>
         </div>
 

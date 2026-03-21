@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { Drawer, IconButton, useMediaQuery } from "@mui/material";
+import { Drawer, IconButton, Tooltip, useMediaQuery } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import VideocamIcon from "@mui/icons-material/Videocam";
@@ -107,16 +107,18 @@ function Layout() {
         >
           {/* Burger button — mobile only */}
           {isMobile && (
-            <IconButton
-              onClick={() => setDrawerOpen(true)}
-              sx={{
-                color: colors.text,
-                p: 0.5,
-                "&:hover": { backgroundColor: `${colors.accent}20` },
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
+            <Tooltip title="Open navigation menu">
+              <IconButton
+                onClick={() => setDrawerOpen(true)}
+                sx={{
+                  color: colors.text,
+                  p: 0.5,
+                  "&:hover": { backgroundColor: `${colors.accent}20` },
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Tooltip>
           )}
 
           <SecurityIcon style={{ color: colors.accent }} />

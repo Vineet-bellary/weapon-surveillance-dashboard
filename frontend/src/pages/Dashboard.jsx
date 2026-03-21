@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Typography, Grid, Button, CircularProgress } from "@mui/material";
+import { Typography, Grid, Button, Tooltip } from "@mui/material";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -179,28 +179,30 @@ export default function Cameras() {
         </Grid>
 
         {/* Button */}
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setSelectedCamera(null);
-            setName("");
-            setStreamUrl("");
-            setOpenModal(true);
-          }}
-          sx={{
-            whiteSpace: "nowrap",
-            height: "fit-content",
-            backgroundColor: colors.accent,
-            color: colors.accentText,
-            fontWeight: 600,
-            "&:hover": {
-              backgroundColor: colors.accentHover,
-            },
-          }}
-        >
-          Add Camera
-        </Button>
+        <Tooltip title="Add a new camera source">
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setSelectedCamera(null);
+              setName("");
+              setStreamUrl("");
+              setOpenModal(true);
+            }}
+            sx={{
+              whiteSpace: "nowrap",
+              height: "fit-content",
+              backgroundColor: colors.accent,
+              color: colors.accentText,
+              fontWeight: 600,
+              "&:hover": {
+                backgroundColor: colors.accentHover,
+              },
+            }}
+          >
+            Add Camera
+          </Button>
+        </Tooltip>
       </div>
 
       {/* Cameras Section */}
