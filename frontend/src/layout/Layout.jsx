@@ -9,6 +9,8 @@ import WarningIcon from "@mui/icons-material/Warning";
 import SecurityIcon from "@mui/icons-material/Security";
 
 import colors from "../theme/colors";
+import Loader from "../components/common/Loader";
+import { useLoading } from "../context/LoadingContext";
 
 function SidebarContent({ onNavigate, linkBase, radius }) {
   return (
@@ -25,18 +27,6 @@ function SidebarContent({ onNavigate, linkBase, radius }) {
       >
         <DashboardIcon style={{ color: colors.accent }} />
         Home
-      </NavLink>
-
-      <NavLink
-        to="/cameras"
-        onClick={onNavigate}
-        style={({ isActive }) => ({
-          ...linkBase,
-          background: isActive ? colors.border : "transparent",
-        })}
-      >
-        <VideocamIcon style={{ color: colors.accent }} />
-        Cameras
       </NavLink>
 
       <NavLink
@@ -69,6 +59,7 @@ function SidebarContent({ onNavigate, linkBase, radius }) {
 function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 899px)");
+  const { loading } = useLoading();
 
   const radius = "10px";
   const linkBase = {
@@ -190,7 +181,7 @@ function Layout() {
               overflowY: "auto",
             }}
           >
-            <Outlet />
+            {loading ? <Loader /> : <Outlet />}
           </div>
         </div>
       </div>
