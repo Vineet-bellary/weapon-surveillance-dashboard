@@ -4,6 +4,7 @@ from typing import Any
 
 import cv2
 
+from .ssd_compact import CompactSSDRuntime
 from .ssd_resnet import SSDRuntime
 
 
@@ -51,6 +52,13 @@ class Detector:
                     label_map=self.label_map,
                     nms_iou_threshold=self.nms_iou_threshold,
                 )
+            elif self.model_type in {"ssd_efficientnet_b0", "ssd_mobilenet_v3_large"}:
+                self.model = CompactSSDRuntime.load(
+                    model_path=self.model_path,
+                    model_type=self.model_type,
+                    label_map=self.label_map,
+                    nms_iou_threshold=self.nms_iou_threshold,
+                )
             else:
                 self.error = f"Unsupported model type: {self.model_type}"
                 return
@@ -65,7 +73,11 @@ class Detector:
 
         effective_threshold = self.confidence_threshold or confidence_threshold
 
-        if self.model_type == "ssd_resnet50":
+        if self.model_type in {
+            "ssd_resnet50",
+            "ssd_efficientnet_b0",
+            "ssd_mobilenet_v3_large",
+        }:
             detections, debug = self.model.detect(frame, effective_threshold)
             self.last_debug = debug
             return self._filter_detections(detections)
