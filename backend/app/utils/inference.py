@@ -4,6 +4,8 @@ from typing import Any
 
 import cv2
 
+from .ssd_resnet import SSDRuntime
+
 
 class Detector:
     def __init__(
@@ -12,11 +14,17 @@ class Detector:
         model_type: str,
         allowed_classes: list[str],
         filter_to_allowed_classes: bool,
+        label_map: dict[int, str] | None = None,
+        confidence_threshold: float | None = None,
+        nms_iou_threshold: float | None = None,
     ):
         self.model_path = model_path
         self.model_type = model_type
         self.allowed_classes = {c.lower() for c in allowed_classes}
         self.filter_to_allowed_classes = filter_to_allowed_classes
+        self.label_map = label_map or {}
+        self.confidence_threshold = confidence_threshold
+        self.nms_iou_threshold = nms_iou_threshold or 0.7
         self.model = None
         self.error = None
         self.last_debug = {
@@ -28,18 +36,24 @@ class Detector:
         self._load()
 
     def _load(self):
-        if self.model_type != "ultralytics":
-            self.error = f"Unsupported model type: {self.model_type}"
-            return
-
         if not os.path.exists(self.model_path):
             self.error = f"Model file not found: {self.model_path}"
             return
 
         try:
-            ultralytics = importlib.import_module("ultralytics")
-            YOLO = getattr(ultralytics, "YOLO")
-            self.model = YOLO(self.model_path)
+            if self.model_type == "ultralytics":
+                ultralytics = importlib.import_module("ultralytics")
+                YOLO = getattr(ultralytics, "YOLO")
+                self.model = YOLO(self.model_path)
+            elif self.model_type == "ssd_resnet50":
+                self.model = SSDRuntime.load(
+                    model_path=self.model_path,
+                    label_map=self.label_map,
+                    nms_iou_threshold=self.nms_iou_threshold,
+                )
+            else:
+                self.error = f"Unsupported model type: {self.model_type}"
+                return
             self.error = None
         except Exception as exc:
             self.error = str(exc)
@@ -49,9 +63,18 @@ class Detector:
         if self.model is None:
             return []
 
+        effective_threshold = self.confidence_threshold or confidence_threshold
+
+        if self.model_type == "ssd_resnet50":
+            detections, debug = self.model.detect(frame, effective_threshold)
+            self.last_debug = debug
+            return self._filter_detections(detections)
+
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         try:
-            results = self.model.predict(source=rgb, conf=confidence_threshold, verbose=False)
+            results = self.model.predict(
+                source=rgb, conf=effective_threshold, verbose=False
+            )
         except Exception:
             return []
 
@@ -88,8 +111,25 @@ class Detector:
         self.last_debug = {
             "raw_count": len(boxes),
             "filtered_count": len(detections),
-            "raw_classes": [str(names.get(int(box.cls[0]), int(box.cls[0]))).lower() for box in boxes],
+            "raw_classes": [
+                str(names.get(int(box.cls[0]), int(box.cls[0]))).lower()
+                for box in boxes
+            ],
             "filter_enabled": self.filter_to_allowed_classes,
         }
 
-        return detections
+        return self._filter_detections(detections)
+
+    def _filter_detections(self, detections: list[dict[str, Any]]):
+        self.last_debug["filter_enabled"] = self.filter_to_allowed_classes
+
+        if not self.filter_to_allowed_classes:
+            return detections
+
+        filtered = [
+            detection
+            for detection in detections
+            if str(detection.get("object_class", "")).lower() in self.allowed_classes
+        ]
+        self.last_debug["filtered_count"] = len(filtered)
+        return filtered

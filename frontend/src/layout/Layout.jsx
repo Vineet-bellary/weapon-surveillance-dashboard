@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Drawer, IconButton, Tooltip, useMediaQuery } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -13,6 +13,7 @@ import Loader from "../components/common/Loader";
 import ModelSelector from "../components/common/ModelSelector";
 import AlertPopup from "../components/common/AlertPopup";
 import { useLoading } from "../context/LoadingContext";
+import { getModels, switchModel } from "../api/models";
 
 function SidebarContent({ onNavigate, linkBase, radius }) {
   return (
@@ -60,8 +61,43 @@ function SidebarContent({ onNavigate, linkBase, radius }) {
 
 function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [models, setModels] = useState([]);
+  const [activeModelKey, setActiveModelKey] = useState("");
+  const [modelError, setModelError] = useState("");
   const isMobile = useMediaQuery("(max-width: 899px)");
   const { loading } = useLoading();
+
+  const fetchModels = async () => {
+    try {
+      const data = await getModels();
+      setModels(data.models || []);
+      setActiveModelKey(data.active_model || "");
+      setModelError(data.error || "");
+    } catch (error) {
+      console.error("Failed to fetch models", error);
+      setModelError("Failed to load models");
+    }
+  };
+
+  useEffect(() => {
+    fetchModels();
+  }, []);
+
+  const handleModelChange = async (selectedModelKey) => {
+    setActiveModelKey(selectedModelKey);
+
+    try {
+      const response = await switchModel(selectedModelKey);
+      setModelError(response.error || "");
+      await fetchModels();
+    } catch (error) {
+      console.error("Failed to switch model", error);
+      await fetchModels();
+    }
+  };
+
+  const activeModel =
+    models.find((model) => model.key === activeModelKey) || null;
 
   const radius = "10px";
   const linkBase = {
@@ -128,7 +164,11 @@ function Layout() {
             Weapon Surveillance
           </h1>
           <div style={{ marginLeft: "auto" }}>
-            <ModelSelector />
+            <ModelSelector
+              models={models}
+              activeModel={activeModelKey}
+              onChange={handleModelChange}
+            />
           </div>
         </div>
 
@@ -188,7 +228,19 @@ function Layout() {
               overflowY: "auto",
             }}
           >
-            {loading ? <Loader /> : <Outlet />}
+            {loading ? (
+              <Loader />
+            ) : (
+              <Outlet
+                context={{
+                  models,
+                  activeModel,
+                  activeModelKey,
+                  modelError,
+                  refreshModels: fetchModels,
+                }}
+              />
+            )}
             <AlertPopup />
           </div>
         </div>

@@ -39,6 +39,9 @@ class ModelManager:
                     "path": meta["path"],
                     "type": meta["type"],
                     "classes": meta["classes"],
+                    "confidence_threshold": meta.get(
+                        "confidence_threshold", CONFIDENCE_THRESHOLD
+                    ),
                     "is_active": key == self._active_key,
                 }
             )
@@ -70,6 +73,9 @@ class ModelManager:
                 model_type=meta["type"],
                 allowed_classes=meta["classes"],
                 filter_to_allowed_classes=FILTER_TO_ALLOWED_CLASSES,
+                label_map=meta.get("label_map"),
+                confidence_threshold=meta.get("confidence_threshold"),
+                nms_iou_threshold=meta.get("nms_iou_threshold"),
             )
 
             if detector.error:

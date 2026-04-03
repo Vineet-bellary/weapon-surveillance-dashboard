@@ -15,6 +15,7 @@ frontend/dist-ssr/
 # folders
 tests/
 backend/media/
+reports/
 
 # Logs
 *.log

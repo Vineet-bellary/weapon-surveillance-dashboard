@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Typography, Grid, Button, Tooltip } from "@mui/material";
+import { Typography, Grid, Button, Tooltip, Chip } from "@mui/material";
+import { useOutletContext } from "react-router-dom";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -16,8 +17,10 @@ import {
 import colors from "../theme/colors";
 import CameraCard from "../components/cameras/CameraCard";
 import CameraModal from "../components/cameras/CameraModal";
+import AppCard from "../components/common/AppCard";
 
 export default function Cameras() {
+  const { activeModel, modelError } = useOutletContext();
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -133,10 +136,9 @@ export default function Cameras() {
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "16px",
-          flexWrap: "wrap",
+          flexDirection: "column",
+          alignItems: "stretch",
+          gap: "20px",
           marginBottom: "20px",
         }}
       >
@@ -178,31 +180,113 @@ export default function Cameras() {
           </Grid>
         </Grid>
 
-        {/* Button */}
-        <Tooltip title="Add a new camera source">
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              setSelectedCamera(null);
-              setName("");
-              setStreamUrl("");
-              setOpenModal(true);
-            }}
-            sx={{
-              whiteSpace: "nowrap",
-              height: "fit-content",
-              backgroundColor: colors.accent,
-              color: colors.accentText,
-              fontWeight: 600,
-              "&:hover": {
-                backgroundColor: colors.accentHover,
-              },
+        <AppCard
+          sx={{
+            border: `1px solid ${colors.border}`,
+            background: `linear-gradient(135deg, ${colors.card} 0%, ${colors.secondary} 100%)`,
+          }}
+        >
+          <div
+            style={{
+              padding: "18px 20px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "14px",
             }}
           >
-            Add Camera
-          </Button>
-        </Tooltip>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "12px",
+                flexWrap: "wrap",
+              }}
+            >
+              <div>
+                <Typography
+                  variant="overline"
+                  sx={{ color: colors.accent, letterSpacing: 1.4 }}
+                >
+                  Selected Model
+                </Typography>
+                <Typography variant="h6" fontWeight={700}>
+                  {activeModel?.name || "No model selected"}
+                </Typography>
+              </div>
+
+              {activeModel?.type ? (
+                <Chip
+                  label={activeModel.type}
+                  sx={{
+                    backgroundColor: `${colors.accent}20`,
+                    color: colors.accent,
+                    border: `1px solid ${colors.accent}55`,
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                  }}
+                />
+              ) : null}
+            </div>
+
+            {modelError ? (
+              <Typography sx={{ color: colors.error }}>{modelError}</Typography>
+            ) : null}
+
+            {activeModel ? (
+              <>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                    gap: "12px",
+                  }}
+                >
+                  <div>
+                    <Typography
+                      sx={{ color: colors.muted, fontSize: "0.8rem", mb: 0.5 }}
+                    >
+                      Confidence Threshold
+                    </Typography>
+                    <Typography fontWeight={600}>
+                      {typeof activeModel.confidence_threshold === "number"
+                        ? activeModel.confidence_threshold.toFixed(2)
+                        : "Default"}
+                    </Typography>
+                  </div>
+                </div>
+
+                <div>
+                  <Typography
+                    sx={{ color: colors.muted, fontSize: "0.8rem", mb: 1 }}
+                  >
+                    Supported Classes
+                  </Typography>
+                  <div
+                    style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
+                  >
+                    {(activeModel.classes || []).map((className) => (
+                      <Chip
+                        key={className}
+                        label={className}
+                        size="small"
+                        sx={{
+                          backgroundColor: `${colors.border}90`,
+                          color: colors.text,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <Typography sx={{ color: colors.muted }}>
+                Select a model from the header dropdown to view its details
+                here.
+              </Typography>
+            )}
+          </div>
+        </AppCard>
       </div>
 
       {/* Cameras Section */}
@@ -227,7 +311,34 @@ export default function Cameras() {
         >
           Cameras
         </Typography>
+
+        <Tooltip title="Add a new camera source">
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setSelectedCamera(null);
+              setName("");
+              setStreamUrl("");
+              setOpenModal(true);
+            }}
+            sx={{
+              whiteSpace: "nowrap",
+              height: "fit-content",
+              backgroundColor: colors.accent,
+              color: colors.accentText,
+              fontWeight: 600,
+              mb: { xs: 1, sm: 3 },
+              "&:hover": {
+                backgroundColor: colors.accentHover,
+              },
+            }}
+          >
+            Add Camera
+          </Button>
+        </Tooltip>
       </div>
+
       {cameras.length === 0 ? (
         <Typography sx={{ color: colors.error, textAlign: "center", mt: 5 }}>
           No cameras found
