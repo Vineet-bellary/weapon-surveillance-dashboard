@@ -217,6 +217,8 @@ Currently the backend is configured for:
 
 If a model file is present in `backend/models`, it can be loaded through the backend model manager.
 
+Model weights are availabe to copy in Capstone Google drive `dashboard/models_dashboard_weights`
+
 ## Troubleshooting
 
 ### Backend does not start
@@ -259,7 +261,3 @@ Check:
 - Backend entry point: `backend/app/main.py`
 - Frontend entry point: `frontend/src/main.jsx`
 - Model integration notes: `_ssd_integration_report.md`
-
-## License
-
-Add your preferred license here if needed.
