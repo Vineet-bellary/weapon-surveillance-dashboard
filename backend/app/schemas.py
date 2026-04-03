@@ -33,6 +33,7 @@ class DetectionCreate(BaseModel):
     camera_id: int
     object_class: str
     confidence: float
+    image_path: str | None = None
 
 
 class DetectionResponse(BaseModel):
@@ -41,6 +42,7 @@ class DetectionResponse(BaseModel):
     object_class: str
     confidence: float
     image_path: str | None
+    model_name: str | None
     detected_at: datetime
 
     class Config:

@@ -27,6 +27,7 @@ class Detection(Base):
     object_class = Column(String, nullable=False)
     confidence = Column(Float, nullable=False)
     image_path = Column(String, nullable=True)
+    model_name = Column(String, nullable=True)
     detected_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     camera = relationship("Camera")

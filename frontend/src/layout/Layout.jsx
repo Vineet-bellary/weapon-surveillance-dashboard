@@ -10,6 +10,8 @@ import SecurityIcon from "@mui/icons-material/Security";
 
 import colors from "../theme/colors";
 import Loader from "../components/common/Loader";
+import ModelSelector from "../components/common/ModelSelector";
+import AlertPopup from "../components/common/AlertPopup";
 import { useLoading } from "../context/LoadingContext";
 
 function SidebarContent({ onNavigate, linkBase, radius }) {
@@ -125,6 +127,9 @@ function Layout() {
           <h1 style={{ fontSize: "18px", margin: 0, color: colors.text }}>
             Weapon Surveillance
           </h1>
+          <div style={{ marginLeft: "auto" }}>
+            <ModelSelector />
+          </div>
         </div>
 
         {/* BODY */}
@@ -184,6 +189,7 @@ function Layout() {
             }}
           >
             {loading ? <Loader /> : <Outlet />}
+            <AlertPopup />
           </div>
         </div>
       </div>

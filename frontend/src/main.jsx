@@ -4,11 +4,14 @@ import "./index.css";
 import App from "./App.jsx";
 
 import { LoadingProvider } from "./context/LoadingContext";
+import { AlertProvider } from "./context/AlertContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <LoadingProvider>
-      <App />
+      <AlertProvider>
+        <App />
+      </AlertProvider>
     </LoadingProvider>
   </StrictMode>,
 );
